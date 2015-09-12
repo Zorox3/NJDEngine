@@ -6,13 +6,16 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.TexturePaint;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 
+import renderer.ImageRenderer;
+import renderer.Renderable;
 import renderer.TextRenderer;
 
-public class Display extends Applet {
+public class Display extends Applet implements Runnable{
 
 	private boolean isRunning = true;
 
@@ -38,11 +41,21 @@ public class Display extends Applet {
 
 	private Thread thread;
 	
-	
+	private List<Renderable> toRender = new ArrayList<>();
 	
 	private TextRenderer text = new TextRenderer();
+	private ImageRenderer image = new ImageRenderer();
 	
+	
+	public void start(){
+		thread = new Thread(this, "Display Thread");
+		thread.start();
+	}
 
+	public void add(Renderable o){
+		toRender.add(o);
+	}
+	
 	public Display(String name, int width, int height) {
 
 		this.name = name;
@@ -111,8 +124,8 @@ public class Display extends Applet {
 			frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		}
 
-
 		frame.setResizable(true);
+		
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
@@ -124,27 +137,96 @@ public class Display extends Applet {
 		width = frame.getWidth();
 		height = frame.getHeight();
 
+	
 	}
 
 	public boolean getSync(){
 		return !vsync;
 	}
 	
-	
-	
+	public void run() {
 
-	public void render() {
-		g = screen.getGraphics();
+		long lastTime = System.nanoTime();
+		double nsPerTick = 1000000000D / 60D;
+		double nsPerTickRender = 1000000000D / getSyncToFrames();
+		long lastTimer = System.currentTimeMillis();
+		double delta = 0;
+		double deltaRender = 0;
+
+		int ticks = 0;
+		int frames = 0;
 
 		
+		render();
+		
+		while (true) {
+
+			
+
+			long now = System.nanoTime();
+			delta += (now - lastTime) / nsPerTick;
+			deltaRender += (now - lastTime) / nsPerTickRender;
+			lastTime = now;
+
+			boolean shouldRender = getSync();
+
+			if (delta >= 1) {
+				ticks++;
+				tick();
+				delta -= 1;
+
+			}
+			if (deltaRender >= 1) {
+				deltaRender -= 1;
+				shouldRender = true;
+				
+			}
+
+			if (shouldRender) {
+				frames++;
+				
+				
+				render();
+				
+			}
+
+			if (System.currentTimeMillis() - lastTimer >= 1000) {
+				lastTimer += 1000;
+				this.frames = frames;
+				this.ticks = ticks;
+				frames = 0;
+				ticks = 0;
+			}
+		}
+
+	}
+	public int getTicks() {
+		return ticks;
+	}
+	public int getFrames() {
+		return frames;
+	}
+	public void tick(){
+		for(Renderable r : toRender){
+			r.tick();
+		}
+	}
+	
+	public void render() {
+		g = screen.getGraphics();
 		
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, width, height);
 				
-
+		for(Renderable r : toRender){
+			r.render(g);
+		}
+		
 		text.setG(g);
 		text.render();
-		//guiRenderer.render(g);
+		
+		image.setG(g);
+		image.render();
 
 		g = getGraphics();
 		g.drawImage(screen, 0, 0, size.width, size.height, 0, 0, pixel.width, pixel.height, null);
