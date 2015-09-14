@@ -6,16 +6,23 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
 
+import loader.ImageLoader;
 import renderer.ImageRenderer;
 import renderer.Renderable;
 import renderer.TextRenderer;
 
 public class Display extends Applet implements Runnable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private boolean isRunning = true;
 
@@ -23,6 +30,10 @@ public class Display extends Applet implements Runnable{
 
 	private int height = 100;
 	private int width = 100;
+	
+	public static int WIDTH;
+	public static int HEIGHT;
+	
 	private Dimension size;
 
 	private JFrame frame;
@@ -32,12 +43,10 @@ public class Display extends Applet implements Runnable{
 	private Dimension pixel;
 
 	private boolean vsync = true;
-	private boolean renderTick = false;
 	private int syncToFrames = 30;
-	private boolean maximize = false;
 	private boolean border = true;
 
-	private int frames, ticks;
+	public static int frames, ticks;
 
 	private Thread thread;
 	
@@ -46,6 +55,7 @@ public class Display extends Applet implements Runnable{
 	private TextRenderer text = new TextRenderer();
 	private ImageRenderer image = new ImageRenderer();
 	
+	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	
 	public void start(){
 		thread = new Thread(this, "Display Thread");
@@ -64,7 +74,7 @@ public class Display extends Applet implements Runnable{
 
 		this.size = new Dimension(width, height);
 		setPreferredSize(size);
-		
+		init();
 
 	}
 
@@ -75,14 +85,19 @@ public class Display extends Applet implements Runnable{
 
 		this.size = new Dimension(width, height);
 		setPreferredSize(size);
-		
+		init();
 	}
 
 	public Display(DisplaySize sizeType) {
 		
 		switch (sizeType) {
 		case FULLSIZE:
-			maximize = true;
+			width = dim.width;
+			height = dim.height;
+			break;
+		case HALFSIZE:
+			width = dim.width/2;
+			height = dim.height/2;
 		default:
 			break;
 		}
@@ -90,8 +105,17 @@ public class Display extends Applet implements Runnable{
 		
 		this.size = new Dimension(width, height);
 		setPreferredSize(size);
-		
+		init();
 
+	}
+	
+	public void init(){
+		
+		new ImageLoader("res/images");
+		
+		WIDTH = width;
+		HEIGHT = height;
+		
 	}
 	
 	public void setBorder(boolean border) {
@@ -108,6 +132,9 @@ public class Display extends Applet implements Runnable{
 
 	public void createDisplay() {
 
+		
+		
+		
 		frame = new JFrame();
 		
 		if(!border){
@@ -116,15 +143,16 @@ public class Display extends Applet implements Runnable{
 		}
 		frame.setLocationRelativeTo(null);
 		
+		
+
 		frame.setTitle(name);
 		frame.add(this);
 		frame.pack();
 
-		if (maximize) {
-			frame.setExtendedState(Frame.MAXIMIZED_BOTH);
-		}
+		
+		frame.setResizable(false);
 
-		frame.setResizable(true);
+		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
 		
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -219,7 +247,7 @@ public class Display extends Applet implements Runnable{
 		g.fillRect(0, 0, width, height);
 				
 		for(Renderable r : toRender){
-			r.render(g);
+			r.render();
 		}
 		
 		text.setG(g);
