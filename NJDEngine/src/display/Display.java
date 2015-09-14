@@ -44,6 +44,8 @@ public class Display extends Applet implements Runnable{
 	private boolean vsync = true;
 	private int syncToFrames = 30;
 	private boolean border = true;
+	
+	private Color background = Color.BLACK;
 
 	public static int frames, ticks;
 
@@ -244,21 +246,27 @@ public class Display extends Applet implements Runnable{
 		}
 	}
 	
+	public void setBackground(Color c){
+		this.background = c;
+	}
+	
 	public void render() {
 		g = screen.getGraphics();
 		
-		g.setColor(Color.BLACK);
+		g.setColor(background);
 		g.fillRect(0, 0, width, height);
 				
 		for(Renderable r : toRender){
 			r.render();
 		}
 		
-		text.setG(g);
-		text.render();
 		
 		image.setG(g);
 		image.render();
+		
+		text.setG(g);
+		text.render();
+
 
 		g = getGraphics();
 		g.drawImage(screen, 0, 0, size.width, size.height, 0, 0, pixel.width, pixel.height, null);

@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import display.Display;
+import display.DisplaySize;
 import renderer.sub.ImageElement;
 
 public class ImageRenderer {
@@ -25,6 +27,17 @@ public class ImageRenderer {
 
 		toRender.add(new ImageElement(image, x, y, width, height));
 
+	}
+	
+	public static void image(BufferedImage image, DisplaySize size){
+		switch (size) {
+		case FULLSIZE:
+				toRender.add(new ImageElement(image, 0, 0, Display.WIDTH, Display.HEIGHT));
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	public void render() {
