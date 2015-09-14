@@ -28,5 +28,4 @@ public class TextElement {
 		g.setFont(font);
 		g.drawString(text, x, y);
 	}
-	
 }

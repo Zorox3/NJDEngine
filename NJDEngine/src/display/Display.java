@@ -3,7 +3,6 @@ package display;
 import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -12,7 +11,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-import loader.ImageLoader;
+import management.NJDE;
 import renderer.ImageRenderer;
 import renderer.Renderable;
 import renderer.TextRenderer;
@@ -56,6 +55,8 @@ public class Display extends Applet implements Runnable{
 	private ImageRenderer image = new ImageRenderer();
 	
 	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	
+	public static int clickX, clickY;
 	
 	public void start(){
 		thread = new Thread(this, "Display Thread");
@@ -106,16 +107,19 @@ public class Display extends Applet implements Runnable{
 		this.size = new Dimension(width, height);
 		setPreferredSize(size);
 		init();
+		
 
 	}
 	
 	public void init(){
 		
-		new ImageLoader("res/images");
-		
 		WIDTH = width;
 		HEIGHT = height;
 		
+		
+		
+		
+		NJDE.init();
 	}
 	
 	public void setBorder(boolean border) {
