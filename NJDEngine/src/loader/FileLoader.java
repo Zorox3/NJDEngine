@@ -24,7 +24,7 @@ public class FileLoader {
 		return files;
 	}
 	
-	public void listDir(File dir) {
+	private void listDir(File dir) {
 
 		File[] filesList = dir.listFiles();
 		if (filesList != null) {
@@ -59,6 +59,10 @@ public class FileLoader {
 		}
 
 		return is;
+	}
+	
+	public File getFile(String name){
+		return files.get(name);
 	}
 
 }

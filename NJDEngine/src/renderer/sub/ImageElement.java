@@ -33,7 +33,7 @@ public class ImageElement {
 	}
 
 	public void render(Graphics g) {
-		if ((x1 + width) <= Display.WIDTH && (y1 + height) <= Display.HEIGHT) {
+		if ((x1) <= Display.WIDTH && (y1) <= Display.HEIGHT) {
 			if (resize) {
 				g.drawImage(image, x1, y1, width, height, null);
 

@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import listener.KeyboardListener;
 import management.NJDE;
 import renderer.ImageRenderer;
 import renderer.Renderable;
@@ -41,6 +42,8 @@ public class Display extends Applet implements Runnable{
 
 	private Dimension pixel;
 
+	private static Display display;
+	
 	private boolean vsync = true;
 	private int syncToFrames = 30;
 	private boolean border = true;
@@ -112,16 +115,24 @@ public class Display extends Applet implements Runnable{
 		
 
 	}
-	
+	public static KeyboardListener key;
 	public void init(){
 		
 		WIDTH = width;
 		HEIGHT = height;
 		
+		display = this;
 		
+		NJDE.key = new KeyboardListener(this);
 		
+		add(text);
+		add(image);
 		
+	
 		NJDE.init();
+	}
+	public static Display getDisplay() {
+		return display;
 	}
 	
 	public void setBorder(boolean border) {
@@ -191,7 +202,7 @@ public class Display extends Applet implements Runnable{
 		int frames = 0;
 
 		
-		render();
+		
 		
 		while (true) {
 
@@ -226,8 +237,8 @@ public class Display extends Applet implements Runnable{
 
 			if (System.currentTimeMillis() - lastTimer >= 1000) {
 				lastTimer += 1000;
-				this.frames = frames;
-				this.ticks = ticks;
+				Display.frames = frames;
+				Display.ticks = ticks;
 				frames = 0;
 				ticks = 0;
 			}
@@ -256,17 +267,18 @@ public class Display extends Applet implements Runnable{
 		g.setColor(background);
 		g.fillRect(0, 0, width, height);
 				
-		for(Renderable r : toRender){
-			r.render();
-		}
-		
-		
-		image.setG(g);
-		image.render();
-		
-		text.setG(g);
-		text.render();
 
+		
+		
+//		image.setG(g);
+//		image.render();
+//		
+//		text.setG(g);
+//		text.render();
+		
+		for(Renderable r : toRender){
+			r.render(g);
+		}
 
 		g = getGraphics();
 		g.drawImage(screen, 0, 0, size.width, size.height, 0, 0, pixel.width, pixel.height, null);

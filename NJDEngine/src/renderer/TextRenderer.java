@@ -7,7 +7,7 @@ import java.util.List;
 
 import renderer.sub.TextElement;
 
-public class TextRenderer {
+public class TextRenderer implements Renderable{
 
 	private static List<TextElement> toRender = new ArrayList<>();
 	private Graphics g;
@@ -22,7 +22,7 @@ public class TextRenderer {
 		
 	}
 	
-	public void render(){
+	public void render(Graphics g){
 		
 		for(TextElement e : new ArrayList<>(toRender)){
 			e.render(g);
@@ -30,6 +30,12 @@ public class TextRenderer {
 		
 		toRender.clear();
 		
+		
+	}
+
+	@Override
+	public void tick() {
+		// TODO Auto-generated method stub
 		
 	}
 	
