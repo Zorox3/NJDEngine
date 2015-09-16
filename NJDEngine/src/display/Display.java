@@ -11,13 +11,14 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import events.SecondTick;
 import listener.KeyboardListener;
 import management.NJDE;
 import renderer.ImageRenderer;
 import renderer.Renderable;
 import renderer.TextRenderer;
 
-public class Display extends Applet implements Runnable{
+public class Display extends Applet implements Runnable {
 
 	/**
 	 * 
@@ -30,10 +31,10 @@ public class Display extends Applet implements Runnable{
 
 	private int height = 100;
 	private int width = 100;
-	
+
 	public static int WIDTH;
 	public static int HEIGHT;
-	
+
 	private Dimension size;
 
 	private JFrame frame;
@@ -43,35 +44,39 @@ public class Display extends Applet implements Runnable{
 	private Dimension pixel;
 
 	private static Display display;
-	
+
 	private boolean vsync = true;
 	private int syncToFrames = 30;
 	private boolean border = true;
-	
+
 	private Color background = Color.BLACK;
 
 	public static int frames, ticks;
 
 	private Thread thread;
-	
+
 	private List<Renderable> toRender = new ArrayList<>();
-	
+	private List<SecondTick> secondTicker = new ArrayList<>();
+
 	private TextRenderer text = new TextRenderer();
 	private ImageRenderer image = new ImageRenderer();
-	
+
 	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-	
+
 	public static int clickX, clickY;
-	
-	public void start(){
+
+	public void start() {
 		thread = new Thread(this, "Display Thread");
 		thread.start();
 	}
 
-	public void add(Renderable o){
+	public void add(Renderable o) {
 		toRender.add(o);
 	}
-	
+	public void addSecondTick(SecondTick o) {
+		secondTicker.add(o);
+	}
+
 	public Display(String name, int width, int height) {
 
 		this.name = name;
@@ -95,100 +100,96 @@ public class Display extends Applet implements Runnable{
 	}
 
 	public Display(DisplaySize sizeType) {
-		
+
 		switch (sizeType) {
 		case FULLSIZE:
 			width = dim.width;
 			height = dim.height;
 			break;
 		case HALFSIZE:
-			width = dim.width/2;
-			height = dim.height/2;
+			width = dim.width / 2;
+			height = dim.height / 2;
 		default:
 			break;
 		}
-		
-		
+
 		this.size = new Dimension(width, height);
 		setPreferredSize(size);
 		init();
-		
 
 	}
+
 	public static KeyboardListener key;
-	public void init(){
-		
+
+	public void init() {
+
 		WIDTH = width;
 		HEIGHT = height;
-		
+
 		display = this;
-		
+
 		NJDE.key = new KeyboardListener(this);
-		
-		add(text);
+
 		add(image);
-		
-	
+		add(text);
+
 		NJDE.init();
 	}
+
 	public static Display getDisplay() {
 		return display;
 	}
-	
+
 	public void setBorder(boolean border) {
 		this.border = border;
 	}
+
 	public void setSyncToFrames(int syncToFrames) {
 		this.syncToFrames = syncToFrames;
 	}
-	
+
 	public int getSyncToFrames() {
 		return syncToFrames;
 	}
-	
 
 	public void createDisplay() {
 
-		
-		
-		
 		frame = new JFrame();
-		
-		if(!border){
+
+		if (!border) {
 			frame.setUndecorated(true);
-			
+
 		}
 		frame.setLocationRelativeTo(null);
-		
-		
 
 		frame.setTitle(name);
 		frame.add(this);
 		frame.pack();
 
-		
 		frame.setResizable(false);
 
-		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-		
-		
+		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
 		pixel = new Dimension(frame.getWidth(), frame.getHeight());
 
 		screen = createVolatileImage(pixel.width, pixel.height);
-		
+
 		width = frame.getWidth();
 		height = frame.getHeight();
 
-	
 	}
 
-	public boolean getSync(){
+	public boolean getSync() {
 		return !vsync;
 	}
-	
+
+	public void setVsync(boolean vsync) {
+		this.vsync = vsync;
+	}
+
 	public void run() {
 
 		long lastTime = System.nanoTime();
@@ -201,12 +202,7 @@ public class Display extends Applet implements Runnable{
 		int ticks = 0;
 		int frames = 0;
 
-		
-		
-		
 		while (true) {
-
-			
 
 			long now = System.nanoTime();
 			delta += (now - lastTime) / nsPerTick;
@@ -224,15 +220,14 @@ public class Display extends Applet implements Runnable{
 			if (deltaRender >= 1) {
 				deltaRender -= 1;
 				shouldRender = true;
-				
+
 			}
 
 			if (shouldRender) {
 				frames++;
-				
-				
+
 				render();
-				
+
 			}
 
 			if (System.currentTimeMillis() - lastTimer >= 1000) {
@@ -241,42 +236,49 @@ public class Display extends Applet implements Runnable{
 				Display.ticks = ticks;
 				frames = 0;
 				ticks = 0;
+				
+				for(SecondTick s : secondTicker){
+					s.secondTick();
+				}
+				
 			}
 		}
 
 	}
+
 	public int getTicks() {
 		return ticks;
 	}
+
 	public int getFrames() {
 		return frames;
 	}
-	public void tick(){
-		for(Renderable r : toRender){
+
+	public void tick() {
+		for (Renderable r : toRender) {
 			r.tick();
 		}
 	}
-	
-	public void setBackground(Color c){
+
+	public void setBackground(Color c) {
 		this.background = c;
 	}
+
+	
 	
 	public void render() {
 		g = screen.getGraphics();
-		
+
 		g.setColor(background);
 		g.fillRect(0, 0, width, height);
-				
 
-		
-		
-//		image.setG(g);
-//		image.render();
-//		
-//		text.setG(g);
-//		text.render();
-		
-		for(Renderable r : toRender){
+		// image.setG(g);
+		// image.render();
+		//
+		// text.setG(g);
+		// text.render();
+
+		for (Renderable r : toRender) {
 			r.render(g);
 		}
 
