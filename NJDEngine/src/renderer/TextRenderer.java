@@ -33,10 +33,5 @@ public class TextRenderer implements Renderable{
 		
 	}
 
-	@Override
-	public void tick() {
-		// TODO Auto-generated method stub
-		
-	}
 	
 }

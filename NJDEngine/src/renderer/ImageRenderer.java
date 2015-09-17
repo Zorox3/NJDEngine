@@ -9,7 +9,7 @@ import renderer.sub.ImageElement;
 import display.Display;
 import display.DisplaySize;
 
-public class ImageRenderer implements Renderable{
+public class ImageRenderer implements Renderable {
 	private static List<ImageElement> toRender = new ArrayList<>();
 	private Graphics g;
 
@@ -48,33 +48,30 @@ public class ImageRenderer implements Renderable{
 
 	public static void imageCentered(BufferedImage image) {
 		toRender.add(new ImageElement(image, Display.WIDTH / 2
-				- image.getWidth() / 2, Display.HEIGHT / 2 - image.getHeight() / 2));
+				- image.getWidth() / 2, Display.HEIGHT / 2 - image.getHeight()
+				/ 2));
 	}
 
 	public static void imageCentered(BufferedImage image, int width, int height) {
 		toRender.add(new ImageElement(image, Display.WIDTH / 2 - width / 2,
 				Display.HEIGHT / 2 - height / 2, width, height));
 	}
-	
-	
-	
+
 	public static void imageCentered(BufferedImage image, DisplaySize size) {
-		
+
 		switch (size) {
 		case FULLSIZE:
 			imageCentered(image, Display.WIDTH, Display.HEIGHT);
 			break;
 		case HALFSIZE:
-			imageCentered(image, Display.WIDTH/2, Display.HEIGHT/2);
+			imageCentered(image, Display.WIDTH / 2, Display.HEIGHT / 2);
 			break;
 
 		default:
 			break;
 		}
-		
+
 	}
-
-
 
 	public static void image(BufferedImage image, int x, int y, DisplaySize size) {
 		switch (size) {
@@ -101,12 +98,5 @@ public class ImageRenderer implements Renderable{
 		toRender.clear();
 
 	}
-
-	@Override
-	public void tick() {
-		// TODO Auto-generated method stub
-		
-	}
-
 
 }

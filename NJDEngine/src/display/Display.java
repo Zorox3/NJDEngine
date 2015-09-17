@@ -11,12 +11,14 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-import events.SecondTick;
 import listener.KeyboardListener;
 import management.NJDE;
+import renderer.FormRenderer;
 import renderer.ImageRenderer;
 import renderer.Renderable;
 import renderer.TextRenderer;
+import events.SecondTick;
+import events.Tickable;
 
 public class Display extends Applet implements Runnable {
 
@@ -57,9 +59,11 @@ public class Display extends Applet implements Runnable {
 
 	private List<Renderable> toRender = new ArrayList<>();
 	private List<SecondTick> secondTicker = new ArrayList<>();
+	private List<Tickable> ticker = new ArrayList<>();
 
 	private TextRenderer text = new TextRenderer();
 	private ImageRenderer image = new ImageRenderer();
+	private FormRenderer form = new FormRenderer();
 
 	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -75,6 +79,9 @@ public class Display extends Applet implements Runnable {
 	}
 	public void addSecondTick(SecondTick o) {
 		secondTicker.add(o);
+	}
+	public void addTickable(Tickable t){
+		ticker.add(t);
 	}
 
 	public Display(String name, int width, int height) {
@@ -131,6 +138,7 @@ public class Display extends Applet implements Runnable {
 		NJDE.key = new KeyboardListener(this);
 
 		add(image);
+		add(form);
 		add(text);
 
 		NJDE.init();
@@ -255,8 +263,8 @@ public class Display extends Applet implements Runnable {
 	}
 
 	public void tick() {
-		for (Renderable r : toRender) {
-			r.tick();
+		for(Tickable t : ticker){
+			t.tick();
 		}
 	}
 
