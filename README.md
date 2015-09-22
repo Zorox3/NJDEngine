@@ -8,10 +8,10 @@
 
  
 **Creating a window:**
-``` java
+```Java
  Display display = new Display(1024,720);
  
- [displayoptions]
+ // [displayoptions] //
  
  display.createDisplay();
  
@@ -20,7 +20,7 @@
 
  
 **Adding something to Render**
-```java
+```Java
 display.add(new TestClass);
 
 
