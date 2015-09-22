@@ -24,9 +24,9 @@ Adding something to Render
 display.add(new TestClass);
 
 
-//*************
-//* TestClass *
-//*************
+
+//* TestClass *//
+
 public class TestClass implements Renderable{
 
     public void render(Graphics g){
@@ -35,6 +35,24 @@ public class TestClass implements Renderable{
 
 }
 ```
+
+Adding something to update
+```java
+display.addTicker(new TestClass);
+
+
+
+//* TestClass *//
+
+public class TestClass implements Tickable{
+
+    public void tick(){
+       //do something
+    }
+
+}
+```
+
 
 ### Display options
 
