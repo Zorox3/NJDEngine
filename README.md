@@ -7,7 +7,7 @@
 ### How to use
 
  
-Creating a window:
+**Creating a window:**
 ``` java
  Display display = new Display(1024,720);
  
@@ -19,7 +19,7 @@ Creating a window:
 ```
 
  
-Adding something to Render
+**Adding something to Render**
 ```java
 display.add(new TestClass);
 
@@ -36,7 +36,7 @@ public class TestClass implements Renderable{
 }
 ```
 
-Adding something to update
+**Adding something to update**
 ```java
 display.addTicker(new TestClass);
 
