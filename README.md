@@ -63,6 +63,6 @@ void setBorder(boolean); //Borderless window
 
 void setSyncToFrames(int); //sets the framelimit
 
-void setVsny(boolean); //turns on/off vSync
+void setVsync(boolean); //turns on/off vSync
 
 ```
