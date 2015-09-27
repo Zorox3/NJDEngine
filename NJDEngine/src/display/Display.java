@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import listener.KeyboardListener;
+import listener.MouseListener;
 import management.NJDE;
 import renderer.FormRenderer;
 import renderer.ImageRenderer;
@@ -136,6 +137,7 @@ public class Display extends Applet implements Runnable {
 		display = this;
 
 		NJDE.key = new KeyboardListener(this);
+		NJDE.mouse = new MouseListener(this);
 
 		add(image);
 		add(form);
