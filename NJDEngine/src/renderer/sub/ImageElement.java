@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import display.Display;
+import management.NJDE;
 
 public class ImageElement {
 	private BufferedImage image;
@@ -13,12 +14,16 @@ public class ImageElement {
 	private boolean resize = false;
 
 	public ImageElement(BufferedImage image, int x, int y) {
+		
+		try{
 		this.image = image;
 		this.x1 = x;
 		this.y1 = y;
 		this.height = image.getHeight();
 		this.width = image.getWidth();
-
+		}catch(NullPointerException npe){
+			NJDE.error("No Image found!");
+		}
 	}
 
 	public ImageElement(BufferedImage image, int x1, int y1, int width,

@@ -2,19 +2,25 @@ package listener;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import management.NJDE;
 import events.Clickable;
+import events.Scrollable;
 
-public class MouseListener implements java.awt.event.MouseListener {
+public class MouseListener implements java.awt.event.MouseListener, MouseWheelListener {
 
 	private int x, y;
 	private List<Clickable> toListen = new ArrayList<>();
+	private List<Scrollable> toScroll = new ArrayList<>();
 
 	public MouseListener(Component c) {
 		c.addMouseListener(this);
+		c.addMouseWheelListener(this);
+		
 	}
 
 	@Override
@@ -23,12 +29,12 @@ public class MouseListener implements java.awt.event.MouseListener {
 		this.x = e.getX();
 		this.y = e.getY();
 
-		for (Clickable clickable : toListen) {
+		for (Clickable clickable : new ArrayList<>(toListen)) {
 
 			if ((clickable.x <= x && clickable.y <= y)
 					&& (x <= (clickable.x + clickable.width) && y <= (clickable.y + clickable.height))) {
 
-				clickable.actionPerformed();
+				clickable.actionPerformed(e);
 
 			}
 		}
@@ -61,6 +67,22 @@ public class MouseListener implements java.awt.event.MouseListener {
 
 	public void add(Clickable c) {
 		toListen.add(c);
+	}
+	public void add(Scrollable s) {
+		toScroll.add(s);
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+
+		NJDE.print("SCROLLED");
+		
+		for (Scrollable scrollable : new ArrayList<>(toScroll)) {
+
+			scrollable.actionOnScoll(e.getPreciseWheelRotation());
+
+		}
+
 	}
 
 }

@@ -3,6 +3,7 @@ package display;
 import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -11,6 +12,8 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import events.SecondTick;
+import events.Tickable;
 import listener.KeyboardListener;
 import listener.MouseListener;
 import management.NJDE;
@@ -18,8 +21,6 @@ import renderer.FormRenderer;
 import renderer.ImageRenderer;
 import renderer.Renderable;
 import renderer.TextRenderer;
-import events.SecondTick;
-import events.Tickable;
 
 public class Display extends Applet implements Runnable {
 
@@ -275,6 +276,12 @@ public class Display extends Applet implements Runnable {
 	}
 
 	
+	private boolean showInfo = false;
+	
+	public void showInfo(boolean b){
+		this.showInfo = b;
+	}
+	
 	
 	public void render() {
 		g = screen.getGraphics();
@@ -282,16 +289,18 @@ public class Display extends Applet implements Runnable {
 		g.setColor(background);
 		g.fillRect(0, 0, width, height);
 
-		// image.setG(g);
-		// image.render();
-		//
-		// text.setG(g);
-		// text.render();
+
 
 		for (Renderable r : toRender) {
 			r.render(g);
 		}
-
+		
+		if(showInfo){
+			g.setColor(Color.YELLOW);
+			g.setFont(new Font("Franklin Gothic Demi", Font.BOLD, 20));
+			g.drawString(frames + " FPS - " + ticks + " UPS", 10, 20);
+		}
+		
 		g = getGraphics();
 		g.drawImage(screen, 0, 0, size.width, size.height, 0, 0, pixel.width, pixel.height, null);
 		g.dispose();

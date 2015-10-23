@@ -21,5 +21,8 @@ public class NJDE {
 	public static void print(Object text){
 		System.out.println(text);
 	}
+	public static void error(Object text){
+		System.err.println(text);
+	}
 	
 }
