@@ -20,8 +20,9 @@ public class MouseListener implements java.awt.event.MouseListener, MouseWheelLi
 	public MouseListener(Component c) {
 		c.addMouseListener(this);
 		c.addMouseWheelListener(this);
-		
 	}
+	
+	
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -70,6 +71,12 @@ public class MouseListener implements java.awt.event.MouseListener, MouseWheelLi
 	}
 	public void add(Scrollable s) {
 		toScroll.add(s);
+	}
+	public void remove(Clickable c) {
+		toListen.remove(c);
+	}
+	public void remove(Scrollable s) {
+		toScroll.remove(s);
 	}
 
 	@Override

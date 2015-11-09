@@ -79,11 +79,25 @@ public class Display extends Applet implements Runnable {
 	public void add(Renderable o) {
 		toRender.add(o);
 	}
+	public void removeFromRendering(Renderable o){
+		toRender.remove(o);
+	}
+
+	
 	public void addSecondTick(SecondTick o) {
 		secondTicker.add(o);
 	}
+	
+	public void removeSecondTick(SecondTick o) {
+		secondTicker.remove(o);
+	}
+	
+	
 	public void addTickable(Tickable t){
 		ticker.add(t);
+	}
+	public void removeTickable(Tickable t){
+		ticker.remove(t);
 	}
 
 	public Display(String name, int width, int height) {
@@ -291,7 +305,7 @@ public class Display extends Applet implements Runnable {
 
 
 
-		for (Renderable r : toRender) {
+		for (Renderable r : new ArrayList<>(toRender)) {
 			r.render(g);
 		}
 		
