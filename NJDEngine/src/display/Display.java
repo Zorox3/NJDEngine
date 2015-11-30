@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 
 import events.SecondTick;
 import events.Tickable;
+import events.VariableTick;
 import listener.KeyboardListener;
 import listener.MouseListener;
 import management.NJDE;
@@ -63,6 +64,8 @@ public class Display extends Applet implements Runnable {
 	private List<SecondTick> secondTicker = new ArrayList<>();
 	private List<Tickable> ticker = new ArrayList<>();
 
+	private List<VariableTick> variableTicker = new ArrayList<>();
+
 	private TextRenderer text = new TextRenderer();
 	private ImageRenderer image = new ImageRenderer();
 	private FormRenderer form = new FormRenderer();
@@ -79,25 +82,33 @@ public class Display extends Applet implements Runnable {
 	public void add(Renderable o) {
 		toRender.add(o);
 	}
-	public void removeFromRendering(Renderable o){
+
+	public void removeFromRendering(Renderable o) {
 		toRender.remove(o);
 	}
 
-	
 	public void addSecondTick(SecondTick o) {
 		secondTicker.add(o);
 	}
-	
+
 	public void removeSecondTick(SecondTick o) {
 		secondTicker.remove(o);
 	}
-	
-	
-	public void addTickable(Tickable t){
+
+	public void addTickable(Tickable t) {
 		ticker.add(t);
 	}
-	public void removeTickable(Tickable t){
+
+	public void removeTickable(Tickable t) {
 		ticker.remove(t);
+	}
+
+	public void addVarTickable(VariableTick t) {
+		variableTicker.add(t);
+	}
+
+	public void removeVarTickable(VariableTick t) {
+		variableTicker.remove(t);
 	}
 
 	public Display(String name, int width, int height) {
@@ -193,7 +204,8 @@ public class Display extends Applet implements Runnable {
 
 		frame.setResizable(false);
 
-		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height
+				/ 2 - frame.getSize().height / 2);
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
@@ -255,17 +267,26 @@ public class Display extends Applet implements Runnable {
 
 			}
 
+			varTicker: for (VariableTick ticker : variableTicker) {
+
+				if (System.currentTimeMillis() - lastTimer >= ticker
+						.getTickTiming()) {
+					ticker.tick();
+				}
+
+			}
+
 			if (System.currentTimeMillis() - lastTimer >= 1000) {
 				lastTimer += 1000;
 				Display.frames = frames;
 				Display.ticks = ticks;
 				frames = 0;
 				ticks = 0;
-				
-				for(SecondTick s : secondTicker){
+
+				for (SecondTick s : secondTicker) {
 					s.secondTick();
 				}
-				
+
 			}
 		}
 
@@ -280,7 +301,7 @@ public class Display extends Applet implements Runnable {
 	}
 
 	public void tick() {
-		for(Tickable t : ticker){
+		for (Tickable t : ticker) {
 			t.tick();
 		}
 	}
@@ -289,34 +310,31 @@ public class Display extends Applet implements Runnable {
 		this.background = c;
 	}
 
-	
 	private boolean showInfo = false;
-	
-	public void showInfo(boolean b){
+
+	public void showInfo(boolean b) {
 		this.showInfo = b;
 	}
-	
-	
+
 	public void render() {
 		g = screen.getGraphics();
 
 		g.setColor(background);
 		g.fillRect(0, 0, width, height);
 
-
-
 		for (Renderable r : new ArrayList<>(toRender)) {
 			r.render(g);
 		}
-		
-		if(showInfo){
+
+		if (showInfo) {
 			g.setColor(Color.YELLOW);
 			g.setFont(new Font("Franklin Gothic Demi", Font.BOLD, 20));
 			g.drawString(frames + " FPS - " + ticks + " UPS", 10, 20);
 		}
-		
+
 		g = getGraphics();
-		g.drawImage(screen, 0, 0, size.width, size.height, 0, 0, pixel.width, pixel.height, null);
+		g.drawImage(screen, 0, 0, size.width, size.height, 0, 0, pixel.width,
+				pixel.height, null);
 		g.dispose();
 	}
 }
