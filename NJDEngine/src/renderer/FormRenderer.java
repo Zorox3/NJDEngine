@@ -5,11 +5,12 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
+import renderer.sub.FormQuadElement;
 import renderer.sub.FormRoundElement;
 
 public class FormRenderer implements Renderable {
 
-	private static List<FormRoundElement> toRender = new ArrayList<>();
+	private static List<Renderable> toRender = new ArrayList<>();
 
 	public static void oval(int x, int y, int width, int height, Color color,
 			boolean filled) {
@@ -39,10 +40,16 @@ public class FormRenderer implements Renderable {
 	public static void drawOval(int x, int y, int radius, Color color) {
 		toRender.add(new FormRoundElement(x, y, radius * 2, radius * 2, color));
 	}
+	public static void drawRect(int x, int y, int width, int height, Color color){
+		toRender.add(new FormQuadElement(x, y, width, height, color));
+	}
+	public static void drawRect(int x, int y, int width, int height, Color color, boolean filled){
+		toRender.add(new FormQuadElement(x, y, width, height, color, filled));
+	}
 
 	@Override
 	public void render(Graphics g) {
-		for (FormRoundElement f : toRender) {
+		for (Renderable f : toRender) {
 			f.render(g);
 		}
 		toRender.clear();
